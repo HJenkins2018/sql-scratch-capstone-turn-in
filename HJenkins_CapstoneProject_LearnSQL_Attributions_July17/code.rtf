@@ -1,0 +1,250 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 ArialMT;\f1\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl440\partightenfactor0
+
+\f0\fs37\fsmilli18667 \cf2 \expnd0\expndtw0\kerning0
+SELECT COUNT (DISTINCT utm_campaign)
+\f1\fs24 \
+
+\f0\fs37\fsmilli18667 FROM page_visits;
+\f1\fs24 \
+
+\f0\fs37\fsmilli18667 \uc0\u8232 
+\f1\fs24 \
+
+\f0\fs37\fsmilli18667 SELECT COUNT (DISTINCT utm_source)
+\f1\fs24 \
+
+\f0\fs37\fsmilli18667 FROM page_visits;
+\f1\fs24 \
+
+\f0\fs37\fsmilli18667 \uc0\u8232 
+\f1\fs24 \
+
+\f0\fs37\fsmilli18667 SELECT DISTINCT utm_campaign, utm_source
+\f1\fs24 \
+
+\f0\fs37\fsmilli18667 FROM page_visits;
+\f1\fs24 \
+\
+
+\f0\fs37\fsmilli18667 SELECT DISTINCT page_name
+\f1\fs24 \
+
+\f0\fs37\fsmilli18667 FROM page_visits;
+\f1\fs24 \
+\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\f0\fs26\fsmilli13333 \cf2 WITH first_touch AS (
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0 SELECT user_id,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0\'a0\'a0\'a0\'a0 MIN(timestamp) as first_touch_at
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0 FROM page_visits
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0 GROUP BY user_id),
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 ft_attr AS (
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0SELECT ft.user_id,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0\'a0\'a0\'a0\'a0 ft.first_touch_at,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0\'a0\'a0\'a0\'a0 pv.utm_source,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0\'a0\'a0\'a0\'a0 pv.utm_campaign
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0FROM first_touch ft
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0JOIN page_visits pv
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 ON ft.user_id = pv.user_id
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 AND ft.first_touch_at = pv.timestamp
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 )
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 SELECT ft_attr.utm_source,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0\'a0\'a0 ft_attr.utm_campaign,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0\'a0\'a0\'a0 COUNT(*)
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 FROM ft_attr
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 GROUP BY 1, 2
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 ORDER BY 3 DESC;
+\f1\fs24 \
+\
+
+\f0\fs26\fsmilli13333 WITH last_touch AS (
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 SELECT user_id,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 \'a0 MAX(timestamp) as last_touch_at
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 FROM page_visits
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 GROUP BY user_id),
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 lt_attr AS (
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0SELECT lt.user_id,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 \'a0 lt.last_touch_at,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 \'a0 pv.utm_source,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 \'a0 pv.utm_campaign
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0FROM last_touch lt
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0JOIN page_visits pv
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 ON lt.user_id = pv.user_id
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 AND lt.last_touch_at = pv.timestamp
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 )
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 SELECT lt_attr.utm_source,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 lt_attr.utm_campaign,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 COUNT(*)
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 FROM lt_attr
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 GROUP BY 1, 2
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 ORDER BY 3 DESC;\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\fs24 \cf2 SELECT COUNT (DISTINCT user_id)
+\f1 \
+
+\f0 FROM page_visits
+\f1 \
+
+\f0 WHERE page_name = '4 - purchase';\
+\
+\pard\pardeftab720\sl300\partightenfactor0
+
+\fs26\fsmilli13333 \cf2 WITH last_touch AS (
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 SELECT user_id,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 \'a0 MAX(timestamp) as last_touch_at
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 FROM page_visits
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 WHERE page_name = '4 - purchase'
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 GROUP BY user_id),
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 lt_attr AS (
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0SELECT lt.user_id,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 \'a0 lt.last_touch_at,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 \'a0 pv.utm_source,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 \'a0 pv.utm_campaign
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0FROM last_touch lt
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0JOIN page_visits pv
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 ON lt.user_id = pv.user_id
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0\'a0 AND lt.last_touch_at = pv.timestamp
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 )
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 SELECT lt_attr.utm_source,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 lt_attr.utm_campaign,
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 \'a0 \'a0 \'a0 COUNT(*) AS visits
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 FROM lt_attr
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 GROUP BY 1, 2
+\f1\fs24 \
+
+\f0\fs26\fsmilli13333 ORDER BY 3 DESC;
+\f1\fs24 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf2 \
+\pard\pardeftab720\sl300\partightenfactor0
+\cf2 \
+}
